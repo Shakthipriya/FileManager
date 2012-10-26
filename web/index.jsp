@@ -1,17 +1,16 @@
-<%-- 
-    Document   : index
-    Created on : 2012/10/27, 2:43:58
-    Author     : freiheit
---%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Sample OAuth Provider</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+ Check out readme file for more information.
     </body>
 </html>
