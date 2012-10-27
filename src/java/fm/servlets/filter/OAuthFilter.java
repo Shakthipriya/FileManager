@@ -1,4 +1,4 @@
-package fm.servlets;
+package fm.servlets.filter;
 
 import java.io.IOException;
 import javax.servlet.*;
@@ -25,7 +25,7 @@ public class OAuthFilter implements Filter {
             OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
             OAuthAccessor accessor = SampleOAuthProvider.getAccessor(requestMessage);
             SampleOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
-            ((HttpServletRequest)request).setAttribute("OAuthAccessor", accessor);
+            request.setAttribute("OAuthAccessor", accessor);
             chain.doFilter(request, response);
         } catch (Exception e){
             SampleOAuthProvider.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);

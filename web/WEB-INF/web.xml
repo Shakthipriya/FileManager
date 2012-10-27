@@ -6,8 +6,24 @@
     <filter>
         <description>Check is already authorized user with OAuth</description>
         <filter-name>OAuthAuthenticateFilter</filter-name>
-        <filter-class>fm.servlets.OAuthFilter</filter-class>
+        <filter-class>fm.servlets.filter.OAuthFilter</filter-class>
     </filter>
+    <filter>
+        <filter-name>FileHashFilter</filter-name>
+        <filter-class>fm.servlets.filter.FileHashFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>IsForwardFilter</filter-name>
+        <filter-class>fm.servlets.filter.IsForwardFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>IsForwardFilter</filter-name>
+        <url-pattern>/handler/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>FileHashFilter</filter-name>
+        <url-pattern>/file/*</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>OAuthAuthenticateFilter</filter-name>
         <servlet-name>EchoServlet</servlet-name>
@@ -29,6 +45,14 @@
         <servlet-name>EchoServlet</servlet-name>
         <servlet-class>net.oauth.example.provider.servlets.EchoServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FileInfoServlet</servlet-name>
+        <servlet-class>fm.servlets.FileInfoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>HZipServlet</servlet-name>
+        <servlet-class>fm.servlets.HZipServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RequestTokenServlet</servlet-name>
         <url-pattern>/oauth/request_token</url-pattern>
@@ -44,6 +68,14 @@
     <servlet-mapping>
         <servlet-name>EchoServlet</servlet-name>
         <url-pattern>/oauth/echo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FileInfoServlet</servlet-name>
+        <url-pattern>/file/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HZipServlet</servlet-name>
+        <url-pattern>/handler/zip</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
