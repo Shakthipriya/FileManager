@@ -38,13 +38,13 @@ import net.oauth.server.OAuthServlet;
  * @author Praveen Alavilli
  */
 public class AccessTokenServlet extends HttpServlet {
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         // nothing at this point
     }
-    
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -55,30 +55,32 @@ public class AccessTokenServlet extends HttpServlet {
             throws IOException, ServletException {
         processRequest(request, response);
     }
-        
+
     public void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try{
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
+
             OAuthAccessor accessor = SampleOAuthProvider.getAccessor(requestMessage);
             SampleOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
-            
+
             // make sure token is authorized
+            String verifier = request.getParameter("oauth_verifier");
+            SampleOAuthProvider.markAsAuthorized(accessor, verifier);
             if (!Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
-                 OAuthProblemException problem = new OAuthProblemException("permission_denied");
+                OAuthProblemException problem = new OAuthProblemException("permission_denied");
                 throw problem;
             }
             // generate access token and secret
             SampleOAuthProvider.generateAccessToken(accessor);
-            
+
             response.setContentType("text/plain");
             OutputStream out = response.getOutputStream();
             OAuth.formEncode(OAuth.newList("oauth_token", accessor.accessToken,
                                            "oauth_token_secret", accessor.tokenSecret),
                              out);
             out.close();
-            
+
         } catch (Exception e){
             SampleOAuthProvider.handleException(e, request, response, true);
         }

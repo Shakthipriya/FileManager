@@ -18,6 +18,7 @@ package net.oauth.example.provider.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -156,16 +157,40 @@ public class SampleOAuthProvider {
     }
 
     /**
-     * Set the access token
+     * Set the access token with verifier
+     * @param accessor access token
+     * @param userId user id
+     * @return access token
+     * @throws OAuthException
      */
-    public static synchronized void markAsAuthorized(OAuthAccessor accessor, String userId)
+    public static synchronized void setAccessor(OAuthAccessor accessor, String userId)
             throws OAuthException {
 
+        ALL_TOKENS.remove(accessor);
+
+        accessor.setProperty("user", userId);
+
+        // Generate a verifier
+        String verifier = accessor.requestToken;
+        verifier += System.nanoTime();
+        verifier = DigestUtils.shaHex(verifier);
+        accessor.setProperty("verifier", verifier.substring(0, 8));
+
+        ALL_TOKENS.add(accessor);
+    }
+
+    /**
+     * Set the access token
+     */
+    public static synchronized void markAsAuthorized(OAuthAccessor accessor, String verifier)
+            throws OAuthException {
 
         // first remove the accessor from cache
         ALL_TOKENS.remove(accessor);
 
-        accessor.setProperty("user", userId);
+        if (!accessor.getProperty("verifier").equals(verifier)) {
+            return;
+        }
         accessor.setProperty("authorized", Boolean.TRUE);
 
         // update token in local cache
@@ -230,9 +255,18 @@ public class SampleOAuthProvider {
     public static void handleException(Exception e, HttpServletRequest request,
             HttpServletResponse response, boolean sendBody)
             throws IOException, ServletException {
-        String realm = (request.isSecure())?"https://":"http://";
-        realm += request.getLocalName();
-        OAuthServlet.handleException(response, e, realm, sendBody);
+
+        if (e instanceof OAuthProblemException) {
+            OAuthProblemException problem = (OAuthProblemException) e;
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            out.println(net.arnx.jsonic.JSON.encode(problem.getParameters()));
+            out.close();
+        } else {
+            String realm = (request.isSecure())?"https://":"http://";
+            realm += request.getLocalName();
+            OAuthServlet.handleException(response, e, realm, sendBody);
+        }
     }
 
 }

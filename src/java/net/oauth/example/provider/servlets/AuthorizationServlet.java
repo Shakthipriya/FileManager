@@ -37,61 +37,61 @@ import net.oauth.server.OAuthServlet;
  * @author Praveen Alavilli
  */
 public class AuthorizationServlet extends HttpServlet {
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         // nothing at this point
     }
-    
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        
+
         try{
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
+
             OAuthAccessor accessor = SampleOAuthProvider.getAccessor(requestMessage);
-           
+
             if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
                 // already authorized send the user back
                 returnToConsumer(request, response, accessor);
             } else {
                 sendToAuthorizePage(request, response, accessor);
             }
-        
+
         } catch (Exception e){
             SampleOAuthProvider.handleException(e, request, response, true);
         }
-        
-        
-        
+
+
+
     }
-    
-    @Override 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) 
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException{
-        
+
         try{
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
+
             OAuthAccessor accessor = SampleOAuthProvider.getAccessor(requestMessage);
-            
+
             String userId = request.getParameter("userId");
             if(userId == null){
                 sendToAuthorizePage(request, response, accessor);
             }
             // set userId in accessor and mark it as authorized
-            SampleOAuthProvider.markAsAuthorized(accessor, userId);
-            
+            SampleOAuthProvider.setAccessor(accessor, userId);
+
             returnToConsumer(request, response, accessor);
-            
+
         } catch (Exception e){
             SampleOAuthProvider.handleException(e, request, response, true);
         }
     }
-    
-    private void sendToAuthorizePage(HttpServletRequest request, 
+
+    private void sendToAuthorizePage(HttpServletRequest request,
             HttpServletResponse response, OAuthAccessor accessor)
     throws IOException, ServletException{
         String callback = request.getParameter("oauth_callback");
@@ -105,37 +105,41 @@ public class AuthorizationServlet extends HttpServlet {
         request.getRequestDispatcher //
                     ("/authorize.jsp").forward(request,
                         response);
-        
+
     }
-    
-    private void returnToConsumer(HttpServletRequest request, 
+
+    private void returnToConsumer(HttpServletRequest request,
             HttpServletResponse response, OAuthAccessor accessor)
     throws IOException, ServletException{
         // send the user back to site's callBackUrl
         String callback = request.getParameter("oauth_callback");
-        if("none".equals(callback) 
-            && accessor.consumer.callbackURL != null 
+        if("none".equals(callback)
+            && accessor.consumer.callbackURL != null
                 && accessor.consumer.callbackURL.length() > 0){
             // first check if we have something in our properties file
             callback = accessor.consumer.callbackURL;
         }
-        
+
         if( "none".equals(callback) ) {
             // no call back it must be a client
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
-            out.println("You have successfully authorized '" 
-                    + accessor.consumer.getProperty("description") 
-                    + "'. Please close this browser window and click continue"
-                    + " in the client.");
+            out.println("You have successfully authorized '"
+                    + accessor.consumer.getProperty("description")
+                    + "'. The verifier is below.\n"
+                    + accessor.getProperty("verifier")
+                    + "\nPlease close this browser window and input the"
+                    + " verifier in the client.");
             out.close();
         } else {
             // if callback is not passed in, use the callback from config
             if(callback == null || callback.length() <=0 )
                 callback = accessor.consumer.callbackURL;
             String token = accessor.requestToken;
-            if (token != null) {
+            String verifier = (String)accessor.getProperty("verifier");
+            if (token != null && verifier != null) {
                 callback = OAuth.addParameters(callback, "oauth_token", token);
+                callback = OAuth.addParameters(callback, "oauth_verifier", verifier);
             }
 
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
