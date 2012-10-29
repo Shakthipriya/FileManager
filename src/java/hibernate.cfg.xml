@@ -3,6 +3,14 @@
 <hibernate-configuration>
   <session-factory>
     <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
+    <property name="hibernate.dialect">com.applerao.hibernatesqlite.dialect.SQLiteDialect</property>
     <property name="hibernate.connection.url">jdbc:sqlite:fileData.db</property>
+    <property name="hibernate.connection.username"/>
+    <property name="hibernate.connection.password"/>
+    <property name="hibernate.hbm2ddl.auto">none</property>
+    <property name="hibernate.show_sql">true</property>
+    <mapping resource="hibernate.hbm.xml"/>
+    <mapping/>
+    <mapping/>
   </session-factory>
 </hibernate-configuration>

@@ -36,7 +36,13 @@ public class HZipServlet extends HttpServlet {
 
         if (request.getAttribute("Path") != null) {
             File f = new File((String)request.getAttribute("Path"));
-            response.setHeader("Content-Disposition","attachment; filename=" + f.getName() + ".zip");
+            String zipName;
+            if (!f.isDirectory() && f.getName().lastIndexOf(".") != -1) {
+                zipName = f.getName().substring(0, f.getName().lastIndexOf("."));
+            } else {
+                zipName = f.getName();
+            }
+            response.setHeader("Content-Disposition","attachment; filename=" + zipName + ".zip");
             response.setContentType("application/x-compress");
 
             ZipArchiveOutputStream zip = new ZipArchiveOutputStream(response.getOutputStream());
@@ -95,7 +101,7 @@ public class HZipServlet extends HttpServlet {
 
     private void addFile(ArchiveOutputStream archive, String basePath, File file) throws IOException {
         String path = file.getAbsolutePath();
-        String name = path.substring(basePath.length());
+        String name = path.substring(basePath.length()+1);
 
         archive.putArchiveEntry(new ZipArchiveEntry(name));
         IOUtils.copy(new FileInputStream(file), archive);
@@ -104,7 +110,7 @@ public class HZipServlet extends HttpServlet {
 
     private void addDir(ArchiveOutputStream archive, String basePath, File file) throws IOException {
         String path = file.getAbsolutePath();
-        String name = path.substring(basePath.length());
+        String name = path.substring(basePath.length()+1);
 
         archive.putArchiveEntry(new ZipArchiveEntry(name + "/"));
         archive.closeArchiveEntry();

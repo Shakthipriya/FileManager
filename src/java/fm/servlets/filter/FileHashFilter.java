@@ -38,16 +38,26 @@ public class FileHashFilter implements Filter {
         String path = ((HttpServletRequest)request).getRequestURI();
 
         Matcher m = hashPattern.matcher(path);
+        String hash;
         if (m.find()) {
-            request.setAttribute("Hash", m.group(1));
-            chain.doFilter(request, response);
+            hash = m.group(1);
         } else {
             PrintWriter pw = response.getWriter();
             HashMap<String, String> e = new HashMap<String, String>(1);
             e.put("error", "Invalid URI");
             pw.println(JSON.encode(e));
             pw.close();
+
+            return;
         }
+
+        /*
+         * TODO: Check file exists
+         */
+        //request.setAttribute("Path", "D:\\OpenCV\\doc");
+
+        request.setAttribute("Hash", hash);
+        chain.doFilter(request, response);
     }
 
     /**
