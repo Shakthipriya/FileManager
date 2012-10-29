@@ -5,9 +5,7 @@
 package fm.servlets.filter;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.regex.*;
 import javax.servlet.Filter;
@@ -49,7 +47,6 @@ public class FileHashFilter implements Filter {
             e.put("error", "Invalid URI");
             pw.println(JSON.encode(e));
             pw.close();
-
         }
     }
 
