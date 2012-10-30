@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -27,6 +28,7 @@ public class FileInfoServlet extends HttpServlet {
             throws ServletException, IOException {
         if (request.getParameterMap().containsKey("zip")) {
             request.getRequestDispatcher("/handler/zip").forward(request, response);
+            return;
         }
 
         response.setContentType("text/html;charset=UTF-8");
@@ -42,6 +44,7 @@ public class FileInfoServlet extends HttpServlet {
             out.println("<body>");
             out.println("<h1>Servlet FileInfoServlet at " + request.getContextPath() + "</h1>");
             out.println("<h2>Hash: " + request.getAttribute("Hash") + "</h2>");
+            out.println("<h2>RealHash: " + DigestUtils.sha256Hex(request.getAttribute("Path")!=null?(String)request.getAttribute("Path"):"") + "</h2>");
             out.println("<p>" + request.getParameterMap() + "</p>");
             out.println("<p>"+request.getAttribute("javax.servlet.forward.request_uri") +"</p>");
             out.println("</body>");

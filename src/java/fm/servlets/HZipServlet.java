@@ -56,25 +56,12 @@ public class HZipServlet extends HttpServlet {
                 zip.close();
             }
         } else {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType("application/json");
             PrintWriter out = response.getWriter();
             try {
                 HashMap<String, String> e = new HashMap<String, String>(1);
                 e.put("error", "Path not found");
                 out.println(JSON.encode(e));
-                /*
-                 * TODO output your page here. You may use following sample code.
-                 */
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet HZipServlet</title>");
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet HZipServlet at " + request.getContextPath() + "</h1>");
-                out.println("<h2>Hash: " + request.getAttribute("Hash") + "</h2>");
-                out.println("<p>"+request.getAttribute("javax.servlet.forward.request_uri") +"</p>");
-                out.println("</body>");
-                out.println("</html>");
             } finally {
                 out.close();
             }

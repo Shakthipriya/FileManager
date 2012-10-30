@@ -3,6 +3,13 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    <jsp-config>
+        <jsp-property-group>
+            <display-name>For all jsp settings</display-name>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
     <filter>
         <description>Check is already authorized user with OAuth</description>
         <filter-name>OAuthAuthenticateFilter</filter-name>
@@ -23,6 +30,10 @@
     <filter-mapping>
         <filter-name>FileHashFilter</filter-name>
         <url-pattern>/file/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>FileHashFilter</filter-name>
+        <url-pattern>/share/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>OAuthAuthenticateFilter</filter-name>
@@ -53,6 +64,10 @@
         <servlet-name>HZipServlet</servlet-name>
         <servlet-class>fm.servlets.HZipServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FileShareServlet</servlet-name>
+        <servlet-class>fm.servlets.FileShareServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RequestTokenServlet</servlet-name>
         <url-pattern>/oauth/request_token</url-pattern>
@@ -76,6 +91,10 @@
     <servlet-mapping>
         <servlet-name>HZipServlet</servlet-name>
         <url-pattern>/handler/zip</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FileShareServlet</servlet-name>
+        <url-pattern>/share/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
