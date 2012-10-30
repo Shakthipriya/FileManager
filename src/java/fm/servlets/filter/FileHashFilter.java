@@ -4,6 +4,7 @@
  */
 package fm.servlets.filter;
 
+import fm.servlets.ErrorHandler;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -42,16 +43,7 @@ public class FileHashFilter implements Filter {
         if (m.find()) {
             hash = m.group(2);
         } else {
-            response.setContentType("application/json");
-            PrintWriter pw = response.getWriter();
-            try {
-                HashMap<String, String> e = new HashMap<String, String>(1);
-                e.put("error", "Invalid URI");
-                pw.println(JSON.encode(e));
-            } finally {
-                pw.close();
-            }
-
+            ErrorHandler.INVALID_URI.send(response);
             return;
         }
 

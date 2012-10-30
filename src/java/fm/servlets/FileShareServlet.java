@@ -48,6 +48,15 @@ public class FileShareServlet extends HttpServlet {
             throws ServletException, IOException {
         if (request.getParameterMap().containsKey("share")) {
             /* Add new share object */
+            try {
+                String key = request.getParameter("password")!=null?request.getParameter("password"):"";
+                int limCount = request.getParameter("count_limit")!=null?Integer.parseInt(request.getParameter("count_limit")):0;
+                String limDate = request.getParameter("date_limit")!=null?request.getParameter("date_limit"):"";
+            } catch (NumberFormatException e) {
+                ErrorHandler.INVALID_PARAMETER.send(response);
+                return;
+            }
+
         } else if (request.getParameterMap().containsKey("download")) {
             /* Download request */
             String key = (request.getParameterMap().containsKey("password"))?request.getParameter("password"):"";

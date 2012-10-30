@@ -3,13 +3,10 @@ package fm.servlets;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.arnx.jsonic.JSON;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -56,15 +53,7 @@ public class HZipServlet extends HttpServlet {
                 zip.close();
             }
         } else {
-            response.setContentType("application/json");
-            PrintWriter out = response.getWriter();
-            try {
-                HashMap<String, String> e = new HashMap<String, String>(1);
-                e.put("error", "Path not found");
-                out.println(JSON.encode(e));
-            } finally {
-                out.close();
-            }
+            ErrorHandler.PATH_NOT_FOUND.send(response);
         }
     }
 
